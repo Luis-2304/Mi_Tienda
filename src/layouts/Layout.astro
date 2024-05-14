@@ -1,0 +1,65 @@
+---
+import { ViewTransitions } from "astro:transitions";
+import { Header } from "../components/header";
+import { Background } from "../components/background";
+import CrystallizeLogo from "../assets/crystallize-logo.svg?url";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const { pathname } = Astro.url;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <ViewTransitions />
+  </head>
+  <body class="relative text-text bg-primary">
+    <Header client:only />
+    <slot />
+    {
+      pathname === "/cart" ||
+      pathname === "/checkout" ||
+      pathname.startsWith("/order") ? null : (
+        <div class="absolute inset-0 bg-fixed -z-10">
+          <Background />
+        </div>
+      )
+    }
+    <footer class="container mt-40 mx-auto pb-10">
+      <div class="flex mt-10  w-full text-center justify-end">
+        <div class="flex items-center gap-1 mt-10">
+          <img src={CrystallizeLogo} alt="Crystallize" class="w-5" />
+          Creado por Luis Angel Hernandez Ramirez + <a href="https://astro.build" class="underline">Astro</a>
+        </div>
+      </div>
+    </footer>
+    <style is:global>
+      @media screen and (max-width: 768px) {
+        .crystallize-grid {
+          display: flex !important;
+          flex-direction: column !important;
+        }
+        .bg-fixed {
+          display: none;
+        }
+      }
+      .bg-fixed {
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+---
+import { fetchAllProducts } from "../../use-cases/queries/all-products";
+import { fetchProduct } from "../../use-cases/queries/product";
+
+import Layout from "../../layouts/Layout.astro";
+import { Product as CrystallizeProduct } from "../../components/product";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const paths = await fetchAllProducts();
+  return paths.catalogue.children.map((child: { path: string }) => ({
+    params: { product: child.path.replace("/shop/", "") },
+  }));
+}
+
+const { product } = Astro.params;
+
+const productData = await fetchProduct(`/shop/${product}`);
+---
+
+<Layout title={productData?.product?.name} description={productData?.prodcut?.name}>
+  <div class="lg:container mx-auto w-full lg:px-0 px-5">
+    {
+      productData ? (
+        <CrystallizeProduct product={productData.product} client:load/>
+      ) : (
+        <p>Product not found</p>
+      )
+    }
+  </div>
+</Layout>
